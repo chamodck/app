@@ -15,7 +15,7 @@ var example = angular.module('starter', ['ionic', 'ngCordova'])
             if(window.StatusBar) {
                 StatusBar.styleDefault();
             }
-            db = $cordovaSQLite.openDB("my.db");
+            db = $cordovaSQLite.openDB({name: "dbname.db",location: 1});
             $cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS people (id integer primary key, firstname text, lastname text)");
         });
     });
@@ -27,6 +27,7 @@ example.controller("ExampleController", function($scope, $cordovaSQLite) {
         var query = "INSERT INTO people (firstname, lastname) VALUES (?,?)";
         $cordovaSQLite.execute(db, query, [firstname, lastname]).then(function(res) {
             console.log("INSERT ID -> " + res.insertId);
+            $scope.message=res.insertId;
         }, function (err) {
             console.error(err);
         });
@@ -37,12 +38,23 @@ example.controller("ExampleController", function($scope, $cordovaSQLite) {
         $cordovaSQLite.execute(db, query, [lastname]).then(function(res) {
             if(res.rows.length > 0) {
                 console.log("SELECTED -> " + res.rows.item(0).firstname + " " + res.rows.item(0).lastname);
+                $scope.message=res.rows.item(0).lastname;
             } else {
                 console.log("No results found");
             }
         }, function (err) {
             console.error(err);
         });
+    }
+
+    $scope.checkDB = function() {
+        if(db==null){
+            console.log("db null");
+            $scope.message="db null";
+        }else{
+            console.log("db not null");
+            $scope.message="db not null";
+        }
     }
  
 });
